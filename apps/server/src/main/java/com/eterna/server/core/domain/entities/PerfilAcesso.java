@@ -1,4 +1,4 @@
-package com.eterna.server.domain.entities.core;
+package com.eterna.server.core.domain.entities;
 
 import lombok.Data;
 
@@ -10,7 +10,7 @@ import java.math.BigInteger;
 @Entity
 @Table(name = "PerfilAcesso", schema = "Core")
 public class PerfilAcesso implements Serializable {
-  @Id @GeneratedValue
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id")
   private BigInteger id;
 

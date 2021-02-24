@@ -1,4 +1,4 @@
-package com.eterna.server.domain.entities.core;
+package com.eterna.server.core.domain.entities;
 
 import lombok.Data;
 
@@ -9,7 +9,7 @@ import java.math.BigInteger;
 @Entity
 @Table(name = "UsuarioPermissaoAcesso", schema = "Core")
 public class UsuarioPermissaoAcesso {
-  @Id @GeneratedValue
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id")
   private BigInteger id;
 

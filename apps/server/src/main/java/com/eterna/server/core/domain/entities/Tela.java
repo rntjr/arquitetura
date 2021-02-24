@@ -1,4 +1,4 @@
-package com.eterna.server.domain.entities.core;
+package com.eterna.server.core.domain.entities;
 
 import lombok.Data;
 
@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "Tela", schema = "Core")
 public class Tela {
-  @Id @GeneratedValue
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id")
   private Integer id;
 

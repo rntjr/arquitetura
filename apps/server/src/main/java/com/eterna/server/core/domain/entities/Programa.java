@@ -1,4 +1,4 @@
-package com.eterna.server.domain.entities.core;
+package com.eterna.server.core.domain.entities;
 
 import lombok.Data;
 
@@ -8,8 +8,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "Programa", schema = "Core")
 public class Programa {
-  @Id
-  @GeneratedValue
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id")
   private Integer id;
 
