@@ -1,5 +1,6 @@
 package com.eterna.server.core.api.controllers;
 
+import com.eterna.server.core.domain.entities.Usuario;
 import com.eterna.server.core.domain.repositories.IUsuarioRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -21,9 +22,9 @@ public class AuthenticationController {
     return "Hello World!";
   }
 
-  /*@PostMapping()
-  public void signUp(@RequestBody Usuario usuario){
+  @PostMapping("/cadastrar")
+  public void cadastrar(@RequestBody Usuario usuario){
     usuario.setSenha(bcrypt.encode(usuario.getSenha()));
     userRepo.save(usuario);
-  }*/
+  }
 }

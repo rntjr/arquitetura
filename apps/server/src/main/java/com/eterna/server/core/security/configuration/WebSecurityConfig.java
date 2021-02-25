@@ -1,11 +1,14 @@
-package com.eterna.server.core.configuration;
+package com.eterna.server.core.security.configuration;
 
-import com.eterna.server.core.services.JWTAuthenticationFilter;
-import com.eterna.server.core.services.JWTAuthorizationFilter;
-import com.eterna.server.core.services.implementarions.UsuarioDetailsServiceImpl;
+import com.eterna.server.core.security.implementations.UserDetailsServiceImpl;
+import com.eterna.server.core.security.jwt.JwtAuthenticationFilter;
+import com.eterna.server.core.security.jwt.JwtAuthorizationFilter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,29 +19,28 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import static com.eterna.server.core.constants.SecurityConstants.SIGN_UP_URL;
-
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-  private final UsuarioDetailsServiceImpl usuarioDetailsService;
-  private final BCryptPasswordEncoder bcrypt;
-
-  public WebSecurityConfig(UsuarioDetailsServiceImpl usuarioDetailsService, BCryptPasswordEncoder bcrypt) {
-    this.usuarioDetailsService = usuarioDetailsService;
-    this.bcrypt = bcrypt;
-  }
+  @Autowired
+  @Qualifier("userDetailsService")
+  private UserDetailsServiceImpl userDetailsService;
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    http.cors().and().csrf().disable().authorizeRequests()
-      .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
+    AuthenticationManager authManager = authenticationManager();
+
+    http
+      .cors().and()
+      .csrf().disable()
+      .authorizeRequests()
+      .antMatchers(HttpMethod.POST, "/api/auth/acessar").permitAll()
+      .antMatchers(HttpMethod.POST, "/api/auth/cadastrar").permitAll()
       .anyRequest().authenticated()
       .and()
-      .addFilter(new JWTAuthenticationFilter(authenticationManager()))
-      .addFilter(new JWTAuthorizationFilter(authenticationManager()))
-      // this disables session creation on Spring Security
+      .addFilter(new JwtAuthenticationFilter(authManager))
+      .addFilter(new JwtAuthorizationFilter(authManager, userDetailsService))
       .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
       .and()
       .httpBasic();
@@ -46,7 +48,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   public void configure(AuthenticationManagerBuilder auth) throws Exception {
-    auth.userDetailsService(usuarioDetailsService).passwordEncoder(bcrypt);
+    BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
+    auth.userDetailsService(userDetailsService).passwordEncoder(bcrypt);
+    //auth.inMemoryAuthentication().withUser("user").password(bcrypt.encode("user")).roles("user");
   }
 
   @Bean
